@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lluvia de Escombros y Tarjeta de San Valentín</title>
+    <style>
+        /* Estilos iniciales */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: white; /* Fondo blanco inicial */
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            text-align: center;
+            color: black;
+            overflow: hidden;
+        }
+
+        .envelope {
+            font-size: 100px; /* Tamaño inicial del emoji */
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            animation: breath 2s ease-in-out infinite; /* Efecto de respiración */
+            position: fixed; /* Para que no se mueva con el bloque de la carta */
+            z-index: 1000; /* Asegurar que esté arriba de todo */
+        }
+
+        /* Animación de respiración */
+        @keyframes breath {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1); /* Expande */
+            }
+            100% {
+                transform: scale(1); /* Contrae */
+            }
+        }
+
+        /* Animación de vibración */
+        @keyframes vibrate {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(5px); }
+        }
+
+        /* Animación de elevar la carta */
+        @keyframes lift {
+            0% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-100px); /* Sube 100px */
+            }
+            100% {
+                transform: translateY(0); /* Vuelve a la posición inicial */
+            }
+        }
+
+        /* Animación de caída de la carta */
+        @keyframes fallEnvelope {
+            0% {
+                transform: translateY(0);
+            }
+            100% {
+                transform: translateY(100vh); /* Cae hasta la parte inferior de la pantalla */
+            }
+        }
+
+        /* Lluvia de escombros */
+        .debris {
+            position: absolute;
+            background-color: #333;
+            opacity: 0.8;
+            border-radius: 3px;
+            animation: fall 2s linear forwards;
+        }
+
+        /* Animación de caída de escombros */
+        @keyframes fall {
+            0% {
+                top: 0; /* Empieza desde la parte superior de la pantalla */
+            }
+            100% {
+                top: 100vh; /* Caen hasta la parte inferior de la pantalla */
+            }
+        }
+
+        /* Estilos para la tarjeta de San Valentín */
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            position: relative;
+            z-index: 10;
+            max-width: 500px;
+            display: none; /* Ocultar inicialmente */
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #d63384;
+        }
+
+        p {
+            font-size: 1.2em;
+            color: #333;
+        }
+
+        /* Corazones cayendo */
+        .heart {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: red;
+            transform: rotate(-45deg);
+            animation: fallHearts 5s linear infinite;
+        }
+
+        .heart::before,
+        .heart::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: red;
+            border-radius: 50%;
+        }
+
+        .heart::before {
+            top: -10px;
+            left: 0;
+        }
+
+        .heart::after {
+            top: 0;
+            left: 10px;
+        }
+
+        @keyframes fallHearts {
+            from {
+                transform: translateY(-100vh) rotate(-45deg);
+                opacity: 1;
+            }
+            to {
+                transform: translateY(100vh) rotate(-45deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="envelope" onclick="handleClick()">
+        💌 <!-- Emoji de carta cerrada -->
+    </div>
+
+    <!-- Tarjeta de San Valentín (oculta inicialmente) -->
+    <div class="card" id="valentineCard">
+        <h1>Esta carta está hecha con mucho cariño para ti🥰😘😍</h1>
+        <p><strong>Para ti, querida Erika</strong></p>
+        <p>Quiero comenzar esta carta expresándote lo agradecido que estoy por tenerte en mi vida.
+            Tu linda sonrisa y ese pequeño gesto de fruncir la nariz me dan tal alegria que es muy epecial. 
+            se que a veces me burlo un poco, tu paciencia ha hecho que podamos conocernos bien y, lo mejor de todo, tener la confianza para decir lo que sea sin miedo a ser raros,
+            me llenas de una energía positiva que solo tú sabes transmitir.
+            Me haces sonreír de una forma tan única.</p>
+            <p>Aunque coincidimos poco por nuestras ocupaciones,
+                cada momento contigo es especial. Verte siempre me llena de felicidad y
+                me contagias esa alegría que te caracteriza. 
+                y siempre trato de disfrutar al máximo el tiempo que podemos pasar juntos.</p>
+                <p><strong>Te agradezco mucho por ser una gran amiga.😘</strong></p> <p>Con todo mi cariño,<br>David</p>
+    </div>
+
+    <script>
+        const envelope = document.querySelector('.envelope');
+        const body = document.body;
+        const valentineCard = document.getElementById('valentineCard');
+        let clickCount = 0; // Contador de clics
+
+        function handleClick() {
+            // Animación de vibración al hacer clic
+            envelope.style.animation = 'vibrate 0.2s ease';
+
+            // Detener la animación de vibración después de 0.2s
+            setTimeout(() => {
+                envelope.style.animation = '';
+            }, 200);
+
+            // Incrementar el contador de clics
+            clickCount++;
+
+            // Generar la lluvia de escombros en cada clic
+            const debrisCount = 20; // Número de escombros que caen
+
+            for (let i = 0; i < debrisCount; i++) {
+                // Crear un nuevo "escombro"
+                const debris = document.createElement('div');
+                debris.classList.add('debris');
+
+                // Tamaño aleatorio entre 5px y 15px
+                const size = Math.random() * 10 + 5; 
+                debris.style.width = `${size}px`;
+                debris.style.height = `${size}px`;
+
+                // Posición aleatoria en el eje X (en la parte superior)
+                debris.style.left = `${Math.random() * window.innerWidth}px`;
+
+                // Posición de inicio en el eje Y
+                debris.style.top = `-${Math.random() * 500}px`; // Caen desde una posición aleatoria en el eje Y
+
+                // Retraso aleatorio para que no caigan todas al mismo tiempo
+                const delay = Math.random() * 0.7; // Retraso entre 0 y 0.7 segundos
+                debris.style.animationDelay = `${delay}s`;
+
+                // Añadir el escombro al cuerpo
+                document.body.appendChild(debris);
+
+                // Eliminar los escombros después de que caen
+                setTimeout(() => {
+                    debris.remove();
+                }, 2000 + delay * 1000); // Eliminar después de que termine la animación
+            }
+
+            // Después de 10 clics, cambiar el fondo y mostrar la tarjeta
+            if (clickCount === 10) {
+                // Cambiar el fondo al gradiente
+                body.style.background = 'linear-gradient(to bottom, #ffcccc, #ff6699)';
+
+                // Mostrar la tarjeta de San Valentín
+                valentineCard.style.display = 'block';
+
+                // Iniciar la lluvia de corazones
+                setInterval(createHeart, 300);
+
+                // Hacer que el emoji de la carta caiga
+                setTimeout(() => {
+                    envelope.style.animation = 'fallEnvelope 2s ease-in-out forwards'; // 2s de duración
+                }, 1000); // Esperar 1s para que termine la animación de elevar la carta
+            }
+        }
+
+        // Función para crear corazones
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            document.body.appendChild(heart);
+            setTimeout(() => {
+                heart.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
